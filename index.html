@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="日本散步達人">
+<meta name="theme-color" content="#f2f7f9">
+<link rel="apple-touch-icon" href="touch-icon-v2.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192-v2.png">
+<link rel="manifest" href="manifest.json?v=2">
+<title>日本散步達人</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap">
+<style>
+:root{
+  /* Densi Book DESIGN.md の共通トークン（わずかに暖色に寄せたグレー） */
+  --bg:#f2f7f9; --surface:#ffffff; --surface-2:#e3eef3;
+  --ink:#16222c; --ink-2:#4d5f6b; --ink-3:#8394a0; --line:#dbe7ed; --line-2:#e9f1f4;
+  --bad:#b4483c; --bad-soft:#f7e4e1; --orange:#b4653c;
+  /* この アプリ の色（基本色1つ）：紺 */
+  --brand:#1c75b4; --brand-ink:#155d91; --brand-soft:#e3f0f8; --on-brand:#ffffff;
+  --btn-shadow:0 1px 2px rgba(20,20,30,.06);
+  /* 旧名 → 新トークン（部品の CSS はこの名前で書いてある） */
+  --ground:var(--bg); --card:var(--surface); --muted:var(--ink-2); --chip:var(--surface-2);
+  --indigo:var(--brand-ink); --navy:var(--brand); --star:var(--brand); --seal:var(--bad); --seal-soft:var(--bad-soft);
+  --sans:"PingFang TC","Heiti TC","Noto Sans TC",system-ui,sans-serif; --serif:var(--sans);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--bg:#10181e;--surface:#172229;--surface-2:#20303a;--ink:#e8f0f4;--ink-2:#a3b4be;--ink-3:#71838e;--line:#263640;--line-2:#1c2a32;
+  --bad:#f09a8e;--bad-soft:#3e2521;--orange:#dd9068;--brand:#6fbde8;--brand-ink:#8ccbee;--brand-soft:#1c3444;--on-brand:#0d1a22;}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--bg:#10181e;--surface:#172229;--surface-2:#20303a;--ink:#e8f0f4;--ink-2:#a3b4be;--ink-3:#71838e;--line:#263640;--line-2:#1c2a32;
+  --bad:#f09a8e;--bad-soft:#3e2521;--orange:#dd9068;--brand:#6fbde8;--brand-ink:#8ccbee;--brand-soft:#1c3444;--on-brand:#0d1a22;}
+*{box-sizing:border-box}
+html{scrollbar-gutter:stable;overflow-y:scroll}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.75;
+  padding-inline:16px;padding-block:20px 48px;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+header h1{font-family:var(--sans);font-weight:500;font-size:26px;line-height:1.3;margin:0;color:var(--brand-ink);letter-spacing:.02em}
+header h1.logo{line-height:0}
+header h1.logo a{display:inline-block;border-radius:3px}
+header h1.logo img{display:block;height:40px;width:auto;max-width:70vw}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header h1.logo img{filter:invert(1) hue-rotate(180deg)}}
+:root[data-theme="dark"] header h1.logo img{filter:invert(1) hue-rotate(180deg)}
+header h1 .sub{color:var(--muted);font-size:.72em;letter-spacing:.02em}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.refresh{width:38px;height:38px;display:grid;place-items:center;background:transparent;color:var(--ink-3);border-radius:4px;flex:none;transition:background .15s,color .15s}
+.refresh:hover{background:var(--surface-2);color:var(--ink)}
+.refresh svg{width:22px;height:22px}
+.hright{display:flex;align-items:center;gap:6px}
+.lang{display:flex;gap:2px}
+.lang button{min-width:34px;height:30px;padding:0 6px;border-radius:3px;background:transparent;color:var(--ink-3);font-size:13px;font-weight:500;letter-spacing:.02em;transition:background .15s,color .15s}
+.lang button:hover{background:var(--surface-2);color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--brand-soft);color:var(--brand-ink)}
+.tline{white-space:nowrap}
+.tsub{font-size:.62em;font-weight:400;color:var(--ink-2);margin-left:.25em}
+.fallback{font-size:12.5px;color:var(--ink-3);margin:8px 0 0}
+.goarea{padding:0;background:none;font:inherit;color:var(--brand-ink);text-align:left;text-decoration:none}
+.refresh.spin svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+header p{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;cursor:pointer;border:0;border-radius:3px;color:inherit;transition:background .15s,color .15s}
+button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--bg);border-radius:0;padding:0;gap:0;border-bottom:1px solid var(--line);
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:6}
+.tabs button{background:transparent;box-shadow:none;padding:12px 4px 11px;margin-bottom:-1px;white-space:nowrap;font-size:15px;font-weight:500;color:var(--ink-2);border-radius:0;border-bottom:2px solid transparent}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{background:transparent;color:var(--brand-ink);border-bottom-color:var(--brand)}
+.tabs .ico{width:17px;height:17px;vertical-align:-3px;margin-right:7px;stroke-width:1.7}
+.count{display:inline-block;min-width:1.6em;margin-left:4px;padding:0 6px;border-radius:4px;background:var(--seal);color:#fff;font-size:12px;line-height:1.6;font-variant-numeric:tabular-nums}
+
+form{display:flex;gap:8px}
+.field{flex:1;min-width:0;font:inherit;font-size:17px;padding:12px 14px;border:0;box-shadow:var(--btn-shadow),inset 0 0 0 1px var(--line);
+  border-radius:3px;background:var(--card);color:var(--ink);-webkit-appearance:none}
+.field:focus{outline:none;box-shadow:inset 0 0 0 2px var(--brand)}
+.field::placeholder{color:var(--ink-3)}
+#go{background:var(--brand);color:var(--on-brand);border-radius:3px;font-weight:500;padding:0 20px;font-size:16px;white-space:nowrap}
+#go:disabled{opacity:.5}
+.status{font-size:14px;color:var(--muted);min-height:1.2em;margin:-8px 0 0}
+.status.err{color:var(--seal)}
+.status:empty{display:none}
+.srow{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;gap:4px 14px;margin:-4px 0 0;text-align:left}
+.srow:has(.status:empty):has(.total:empty){display:none}
+.srow{flex-wrap:nowrap}
+.srow .status{margin:0;text-align:left;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.total{margin:0;font-size:13.5px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.total:empty{display:none}
+.areas{display:flex;flex-direction:column;gap:10px}
+.pref{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px}
+.prefs{display:flex;flex-wrap:nowrap;gap:0;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;padding-right:32px}
+.prefs::-webkit-scrollbar{display:none}
+.prefs-wrap{position:relative}
+.pref-more{position:absolute;top:0;right:-2px;bottom:0;width:40px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:24px;line-height:1;color:var(--ink);border-radius:0;
+  background:linear-gradient(to right,transparent,var(--ground) 45%)}
+.pref-less{position:absolute;top:0;left:-2px;bottom:0;width:40px;display:flex;align-items:center;justify-content:flex-start;padding-left:4px;font-size:24px;line-height:1;color:var(--ink);border-radius:0;
+  background:linear-gradient(to left,transparent,var(--ground) 45%)}
+.pref-less[hidden],.pref-more[hidden]{display:none}
+#card.sample:not(.thinking){display:none}
+.origin-h{margin:16px 0 4px;font-size:14px;font-weight:700;color:var(--ink)}
+.origin{margin:0;white-space:pre-line;font-size:16px;line-height:1.85}
+.pref-b{flex:none;white-space:nowrap;background:transparent;box-shadow:none;color:var(--ink-2);font-size:14px;padding:8px 12px 7px;border-radius:0;border-bottom:2px solid transparent;margin-bottom:-1px}
+.pref-b:hover{color:var(--ink)}
+.pref-b[aria-expanded="true"]{background:transparent;color:var(--brand-ink);border-bottom-color:var(--brand)}
+.cities.chips{display:flex;flex-wrap:nowrap;gap:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-top:2px;padding:0;background:transparent;border-bottom:1px solid var(--line)}
+.cities::-webkit-scrollbar{display:none}
+.cities.chips button{flex:none;white-space:nowrap;padding:8px 12px 7px;margin-bottom:-1px;border-bottom:2px solid transparent;border-radius:0;color:var(--ink-2);text-decoration:none}
+.cities.chips button:hover{color:var(--ink)}
+.cities.chips button[aria-pressed="true"]{color:var(--brand-ink);border-bottom-color:var(--brand);text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:4px 18px}
+.chips button{background:transparent;border:0;font-size:14px;padding:2px 0;color:var(--ink)}
+.chips button[aria-pressed="true"]{color:var(--brand-ink);text-decoration:none}
+
+.card{background:var(--surface);border-radius:4px;padding:24px 22px;position:relative}
+.eyebrow{font-size:11.5px;letter-spacing:1.8px;color:var(--ink-3);margin:0}
+.ja-name{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;margin:4px 0 0;font-size:14px;font-weight:400;color:var(--ink-2);line-height:1.5;font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+.ja-name .yomi{font-size:12.5px;color:var(--ink-3)}
+.card h2{font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.35;margin:2px 0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0 0 16px;font-size:14.5px}
+dt{color:var(--ink-3);font-weight:500;white-space:nowrap}
+dd{margin:0}
+.intro{margin:0;padding-top:14px;border-top:1px dashed var(--line);white-space:pre-line;font-size:16.5px;line-height:1.9}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+.links a{display:inline-flex;align-items:center;gap:6px;font-size:14px;padding:7px 12px;border:1px solid var(--line);border-radius:3px;color:var(--brand-ink);text-decoration:none;background:var(--surface)}
+.links a:hover{background:var(--brand-soft)}
+.links svg{width:16px;height:16px}
+.shops-h{font-size:11.5px;font-weight:500;color:var(--brand-ink);margin:18px 0 8px;letter-spacing:.08em}
+.shops{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.shops li{border:1px solid var(--line);border-radius:3px;padding:9px 12px;background:var(--surface)}
+.shops .sn{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.shops .rk{font-size:12px;color:var(--brand-ink);font-weight:600}
+.shops b{font-weight:600}
+.shops .sa{font-size:12.5px;opacity:.7}
+.shops .st{font-size:13.5px;margin:3px 0 0;line-height:1.6}
+.shops .sl{display:flex;gap:12px;margin-top:5px;font-size:13px}
+.shops .sl a{display:inline-flex;align-items:center;gap:4px;color:var(--brand-ink);text-decoration:none}
+.shops .sl svg{width:14px;height:14px}
+.kw-h{font-size:11.5px;font-weight:500;color:var(--brand-ink);letter-spacing:1.8px;margin:18px 0 8px;letter-spacing:.08em}
+.kws{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.kws li button{background:var(--brand-soft);color:var(--brand-ink);font-size:14px;padding:6px 12px;border-radius:3px}
+.kws li button:hover{background:var(--surface-2)}
+.tabs .save{background:var(--indigo);color:var(--card);font-weight:500}
+.tabs .save[data-saved]{background:transparent;color:var(--indigo)}
+.tabs .save:disabled{background:transparent;color:var(--muted);opacity:.6;cursor:default}
+.tabs .save[data-saved]{visibility:hidden}
+.del{position:absolute;top:12px;right:12px;min-width:36px;height:36px;padding:0 8px;display:grid;place-items:center;background:transparent;color:var(--muted);font-size:13px;font-weight:500}
+.del{opacity:.4}
+.del svg{stroke-width:1.5}
+.del:hover{background:var(--chip);color:var(--ink);opacity:.9}
+.list li{position:relative}
+.list .del{top:8px;right:8px}
+.mini{height:100%}
+.list .del{top:4px;right:2px}
+.del ~ .eyebrow{padding-right:44px}
+.del svg{width:20px;height:20px;display:block}
+.undo{background:transparent;color:var(--indigo);font-weight:500;text-decoration:none;padding:0 4px;font-size:14px}
+.del:disabled{opacity:.2}
+.del.close{opacity:.6}
+.hnav{position:absolute;top:10px;right:10px;display:flex;gap:2px}
+.hnav button{width:36px;height:36px;display:grid;place-items:center;background:transparent;color:var(--ink);opacity:.6}
+.hnav button:hover:not(:disabled){background:var(--chip);opacity:1}
+.hnav button:disabled{opacity:.18;cursor:default}
+.hnav svg{width:22px;height:22px}
+.hnav ~ .eyebrow{padding-right:80px}
+.dnav{position:absolute;top:12px;right:52px;display:flex;gap:2px}
+.dnav button{width:36px;height:36px;display:grid;place-items:center;background:transparent;color:var(--ink);opacity:.6}
+.dnav button:hover:not(:disabled){background:var(--chip);opacity:1}
+.dnav button:disabled{opacity:.18;cursor:default}
+.dnav svg{width:22px;height:22px}
+.dnav ~ .eyebrow{padding-right:130px}
+.dpos{font-size:12px;color:var(--muted);align-self:center;margin-right:2px}
+.fav{display:grid;place-items:center;width:36px;height:36px;padding:0;background:transparent;color:var(--star);opacity:1}
+.fav svg{fill:currentColor;fill-opacity:.1;stroke:none}
+.fav[aria-pressed="true"] svg{fill-opacity:1}
+.fav svg{width:22px;height:22px;display:block}
+.fav[aria-pressed="true"]{color:var(--star);opacity:1}
+.fav[aria-pressed="true"] svg{fill:currentColor}
+.fav:hover,.fav:focus,.fav:active{background:transparent;outline:none;box-shadow:none;-webkit-tap-highlight-color:transparent}
+.fav svg{transition:transform .15s,fill-opacity .15s}
+.fav:hover svg{fill-opacity:.35}
+.fav[aria-pressed="true"]:hover svg{fill-opacity:1}
+.fav:active svg{transform:scale(.9)}
+.list .fav{position:absolute;top:50%;left:8px;right:auto;width:28px;height:28px;transform:translateY(-50%)}
+.list .fav svg{width:20px;height:20px}
+.list .mini{padding-left:44px;padding-right:12px}
+#list .fav{display:none}
+#list .mini{padding-left:14px}
+#areaList .fav{display:none}
+#areaList .mini{padding-left:14px}
+.fav-d{margin:-6px 0 -4px -8px}
+.trash{display:grid;place-items:center;width:36px;height:36px;margin:18px 0 -8px -8px;background:transparent;color:var(--muted);opacity:.45}
+.trash:hover{background:var(--chip);opacity:.9}
+.trash svg{width:20px;height:20px;stroke-width:1.5}
+.back{background:transparent;color:var(--indigo);font-size:15px;font-weight:500;padding:4px 0;align-self:flex-start}
+.thinking .intro{color:var(--muted)}
+
+.list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.list li:has(.empty),.list .more-li{grid-column:1/-1}
+.more{width:100%;padding:12px;background:var(--surface);box-shadow:var(--btn-shadow);color:var(--brand-ink);font-size:15px}
+.more:hover{background:var(--surface-2)}
+.list li{display:flex}
+.mini{width:100%;text-align:left;background:var(--surface);border-radius:4px;padding:14px 14px 14px 14px;
+  display:block;transition:background .15s}
+.mini:hover{background:var(--brand-soft)}
+.mini .tag{display:block;font-style:normal;font-size:12.5px;font-weight:500;color:var(--seal);line-height:1.4;margin-bottom:2px}
+.mini b{display:block;font-weight:500;font-family:var(--serif);font-size:17px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini{min-width:0}
+.list li{min-width:0}
+.mini > span{display:block;min-width:0}
+.mini small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+.mini p{margin:4px 0 0;font-size:13.5px;line-height:1.6;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.empty{background:var(--surface);border-radius:4px;padding:28px 20px;text-align:center;color:var(--muted);font-size:14.5px;margin:0}
+/* スマホでは本文を大きめに */
+@media (max-width:600px){
+  .intro{font-size:18.5px;line-height:1.95}
+  dl{font-size:16px}
+  .eyebrow{font-size:13px}
+  .ja-name{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;margin:4px 0 0;font-size:14px;font-weight:400;color:var(--ink-2);line-height:1.5;font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+.ja-name .yomi{font-size:12.5px;color:var(--ink-3)}
+.card h2{font-size:26px}
+  .kw-h{font-size:14px}
+  .shops-h{font-size:14px}
+  .kws li button{font-size:16px;padding:7px 13px}
+  .mini b{font-size:18px}
+  .chips button,.pref-h{font-size:15px}
+  .pref-b{font-size:15px}
+  .tabs button{font-size:15px}
+  .status{font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1 class="logo"><a href="./" id="home" aria-label="回到首頁"><img src="logo2.png" alt="日本散步達人" width="176" height="44"></a></h1>
+    <div class="hright"><div class="lang" role="group" aria-label="Language"><button type="button" data-lang="zh" aria-pressed="true">TW</button><button type="button" data-lang="ja" aria-pressed="false">JP</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div><button type="button" id="refresh" class="refresh" aria-label="重新整理卡片"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" id="tabSearch" aria-selected="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><span data-t="tabSearch">景點查詢</span></button>
+    <button type="button" role="tab" id="tabSaved" aria-selected="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="13" rx="1.5"/><path d="M7 4h12.5A1.5 1.5 0 0 1 21 5.5V17"/></svg><span data-t="tabSaved">收藏卡片</span></button>
+    <button type="button" role="tab" id="tabFav" aria-selected="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span data-t="tabFav">我的最愛</span></button>
+  </nav>
+
+  <div id="searchBar" style="display:flex;flex-direction:column;gap:12px">
+    <form id="f" autocomplete="off">
+      <input id="q" class="field" type="search" enterkeyhint="search" placeholder="例：太宰府天滿宮、櫛田神社" aria-label="景點名稱">
+      <button id="go" type="submit" data-t="go">查詢卡片</button>
+    </form>
+    <div class="srow"><p id="total" class="total"></p><p id="status" class="status" role="status"></p></div>
+  </div>
+
+  <section id="viewSearch" style="display:flex;flex-direction:column;gap:12px">
+    <article id="card" class="card" aria-live="polite"></article>
+  </section>
+
+  <section id="viewSaved" hidden style="flex-direction:column;gap:12px">
+    <p id="savedStatus" class="status" role="status"></p>
+    <ul id="list" class="list"></ul>
+  </section>
+
+  <section id="viewFav" hidden style="flex-direction:column;gap:12px">
+    <p id="favStatus" class="status" role="status"></p>
+    <ul id="favList" class="list"></ul>
+  </section>
+
+  <section id="viewArea" hidden style="flex-direction:column;gap:12px">
+    <div id="areaChips" class="areas"></div>
+    <p id="areaStatus" class="status" role="status"></p>
+    <ul id="areaList" class="list"></ul>
+  </section>
+
+  <section id="viewDetail" hidden style="flex-direction:column;gap:12px">
+    <article id="detail" class="card"></article>
+  </section>
+</div>
+
+<script>
+const SAMPLE = {
+  type:"spot", place:"櫛田神社", location:"福岡縣福岡市博多區", era:"757年創建（天平寶字元年，傳說）",
+  intro:"櫛田神社是福岡博多的總鎮守，當地人親切稱為「御櫛田」，供奉大幡主命、天照皇大神與素戔嗚尊，自古守護博多商人與居民。\n這裡是日本三大祭之一「博多祇園山笠」的舞台，每年7月1日至15日熱鬧非凡；境內全年展示高約十公尺的華麗「飾山笠」，隨時都能感受祭典氛圍。境內還有樹齡悠久的大銀杏與靈泉「鶴之井戶」，從博多站或中洲川端站步行即可抵達，是博多街區散步必訪的景點。",
+  keywords:["櫛田神社","博多祇園山笠","飾山笠","博多總鎮守","御櫛田","博多區","中洲川端","大銀杏","博多町家","福岡市"]
+};
+
+const $ = id => document.getElementById(id);
+const card=$("card"), statusEl=$("status"), q=$("q"), go=$("go");
+let current=null, ctl=null;
+let saved=[];          // [{id, place, location, era, intro, keywords, savedAt}]
+let db=null, dbReady=false;
+/* カードはサーバー（1枚 = 1つの .md ファイル）に保存し、どの端末からも同じ一覧を見る */
+/* Mac アプリの中で開いたときは、アプリ本体（Swift）に処理を頼む */
+let nativeSeq=0; const nativeWait={};
+window.__spotReply=(id,ok,data)=>{const w=nativeWait[id];delete nativeWait[id];if(w)(ok?w.res:w.rej)(data)};
+window.__spotRefresh=()=>refreshCards();
+function nativeCall(body,pass){return new Promise((res,rej)=>{const id=++nativeSeq;nativeWait[id]={res,rej};window.webkit.messageHandlers.spot.postMessage({id,body,pass})})}
+async function call(body,signal){
+  let pass=""; try{pass=localStorage.getItem("spotGuidePass")||""}catch{}
+  if(window.webkit?.messageHandlers?.spot)return nativeCall(body,pass);
+  let res;
+  try{res=await fetch("api.php",{method:"POST",headers:{"Content-Type":"application/json","X-Pass":pass},body:JSON.stringify(body),signal})}
+  catch(e){throw{code:e?.name==="AbortError"?"cancelled":"upstream_error"}}
+  let data=null; try{data=await res.json()}catch{}
+  if(!res.ok||!data||data.error)throw{code:data?.error||"upstream_error"};
+  return data;
+}
+let serverCards=[], listListeners=[], listErr=null;
+function emitList(){
+  const snap={docs:serverCards.map(d=>({id:d.id,data:()=>{const {id,...b}=d;return b}}))};
+  listListeners.forEach(f=>f(snap));
+}
+async function refreshCards(){
+  try{
+    const r=await call({action:"list"}); serverCards=r.cards||[]; emitList();
+    migrateLocal();
+  }catch(e){ if(e.code==="need_pass")askPass(null); else listErr&&listErr(e) }
+}
+/* 以前この端末のブラウザに保存したカードを、一度だけサーバーへ移す */
+let migrating=false;
+async function migrateLocal(){
+  if(migrating)return;
+  let local=[]; try{if(localStorage.getItem("spotGuideMigrated"))return;local=JSON.parse(localStorage.getItem("spotGuideCards")||"[]")}catch{return}
+  migrating=true;
+  for(const c of local){ if(!serverCards.some(x=>sameName(x.place,c.place))){try{await call({action:"save",card:c})}catch{}} }
+  try{localStorage.setItem("spotGuideMigrated","1")}catch{}
+  migrating=false;
+  if(local.length){const r=await call({action:"list"}).catch(()=>null); if(r){serverCards=r.cards||[]; emitList()}}
+}
+const serverDb={collection(){return{
+  orderBy(){return this},
+  onSnapshot(f,err){listListeners.push(f);listErr=err;refreshCards();return()=>{}},
+  async add(b){await call({action:"save",card:b});await refreshCards()},
+  doc(id){return{
+    async delete(){const c=serverCards.find(x=>x.id===id);if(c)await call({action:"delete",place:c.place});await refreshCards()},
+    async update(){},
+    async set(b){await call({action:"save",card:b});await refreshCards()}
+  }}
+}}};
+/* 紹介文：サーバーがまず保存済みカードを探し、なければ Claude に書かせて保存する */
+const api={async json(kw,{signal}={}){
+  const d=await call({action:"ask",keyword:toTW(kw)},signal);
+  refreshCards();
+  return d;
+}};
+const samplePromise=Promise.resolve(api);
+const dbPromise=Promise.resolve(serverDb);
+
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+const isPerson=d=>d.type==="person";
+const isHotel=d=>d.type==="hotel";
+/* 見出しは1行のまま。（…）の補足は小さく同じ行に並べる（途中では改行しない） */
+const titleHTML=n=>{const m=String(n||"").match(/^(.*?)\s*([（(].*[）)])$/);return `<span class="tline">${m?`<span class="tmain">${esc(m[1])}</span><span class="tsub">${esc(m[2])}</span>`:`<span class="tmain">${esc(n||"")}</span>`}</span>`};
+const noStr=d=>d&&d.no?String(d.no).padStart(5,"0"):"";
+/* 番号で探す：「123」「0123」「No.123」「#123」 */
+const noQuery=t=>{const m=String(t||"").trim().match(/^(?:no\.?|#|№)?\s*(\d{1,5})$/i);return m?+m[1]:null};
+
+/* ---------- 言語切り替え（繁中／日本語／English） ---------- */
+let lang="zh"; try{lang=localStorage.getItem("spotLang")||"zh"}catch{}
+if(!["zh","ja","en"].includes(lang))lang="zh";
+const T={
+ zh:{tabSearch:"景點查詢",tabSaved:"收藏卡片",tabFav:"我的最愛",go:"查詢卡片",make:"製作卡片",nohit:"尚未有這張卡片。",queued:k=>`已將「${k}」加入製作清單`,shown:"已從收藏卡片中顯示。",phQ:"例：太宰府天滿宮、櫛田神社",phFilter:"在收藏中搜尋（名稱・地點・關鍵字）",
+  spot:"景點介紹",person:"人物介紹",hotel:"住宿介紹",place:"場所",rel:"相關地",era:"年代",life:"生卒年",open:"開業",origin:"由來",kwh:"關鍵字（點選即可查詢）",shops:"推薦店家 TOP ",web:"官方網站",map:"Google 地圖",saved:"保存",
+  count:n=>`共 ${n} 張卡片`,more:n=>`顯示更多（還有 ${n} 張）`,nolang:""},
+ ja:{tabSearch:"スポット検索",tabSaved:"保存カード",tabFav:"お気に入り",go:"カード検索",make:"カードを作成",nohit:"このカードはまだありません。",queued:k=>`「${k}」を作成リストに入れました`,shown:"保存カードから表示しました。",phQ:"例：太宰府天満宮、櫛田神社",phFilter:"保存カードから検索（名前・場所・キーワード）",
+  spot:"スポット紹介",person:"人物紹介",hotel:"宿泊紹介",place:"所在地",rel:"ゆかりの地",era:"年代",life:"生没年",open:"開業",origin:"由来",kwh:"キーワード（タップで検索）",shops:"おすすめの店 TOP ",web:"公式サイト",map:"Google マップ",saved:"保存",
+  count:n=>`全 ${n} 枚`,more:n=>`さらに表示（あと ${n} 枚）`,nolang:"（日本語版は準備中のため、繁体字中国語で表示しています）"},
+ en:{tabSearch:"Search",tabSaved:"Saved",tabFav:"Favorites",go:"Search cards",make:"Create card",nohit:"No card for this yet.",queued:k=>`"${k}" added to the creation list`,shown:"Shown from saved cards.",phQ:"e.g. Dazaifu Tenmangu, Kushida Shrine",phFilter:"Search saved cards (name, place, keyword)",
+  spot:"Sightseeing spot",person:"Profile",hotel:"Accommodation",place:"Location",rel:"Related place",era:"Period",life:"Lifespan",open:"Opened",origin:"Origin",kwh:"Keywords (tap to search)",shops:"Recommended TOP ",web:"Official site",map:"Google Maps",saved:"saved",
+  count:n=>`${n} cards`,more:n=>`Show more (${n} left)`,nolang:"(English version is not ready yet; showing Traditional Chinese.)"}
+};
+const tt=k=>T[lang][k];
+/* カードの表示用データ：選んだ言語の訳があればそれ、なければ繁體字の元の文 */
+function lv(d){
+  const x=(d.tr&&d.tr[lang])||{}, zh=lang==="zh", has=zh||!!x.intro;
+  const name=lang==="ja"?(d.ja||d.place):lang==="en"?(x.name||d.place):d.place;
+  const sub=lang==="ja"?{a:"",b:d.yomi||""}:lang==="en"?{a:d.ja||"",b:d.yomi||""}:{a:d.ja||"",b:d.yomi||""};
+  const kw=d.keywords||[];
+  return {name,sub,has,
+    location:x.location||d.location,era:x.era||d.era,intro:x.intro||d.intro,origin:x.origin||d.origin||"",
+    kwShow:i=>(x.keywords&&x.keywords[i])||kw[i]};
+}
+function applyLang(){
+  document.documentElement.lang=lang==="zh"?"zh-Hant-TW":lang;
+  document.querySelectorAll("[data-t]").forEach(e=>e.textContent=tt(e.dataset.t));
+  q.placeholder=tt("phQ"); 
+  document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
+  updateCount();
+  if(current)render(current,currentIsSample,true);
+  if(typeof drawList==="function"){drawList();drawFav();drawArea()}
+  if(!$("viewDetail").hidden){const d=saved.find(x=>x.id===detailId);if(d)$("detail").innerHTML=cardHTML(d,{mode:"detail"})}
+}
+document.querySelector(".lang").addEventListener("click",e=>{const b=e.target.closest("[data-lang]");if(!b||b.dataset.lang===lang)return;lang=b.dataset.lang;try{localStorage.setItem("spotLang",lang)}catch{}applyLang()});
+
+const firstChar=s=>[...(s||"景")][0];
+/* 同じ名前のカードは重複させない（空白・記号・括弧内の補足は無視して比べる） */
+/* 日本の新字体を台湾の繁体字にそろえて比べる（天満宮→天滿宮 など） */
+const JP2TW={"満":"滿","県":"縣","国":"國","広":"廣","沢":"澤","桜":"櫻","竜":"龍","駅":"站","鉄":"鐵","気":"氣","楽":"樂","薬":"藥","売":"賣","読":"讀","対":"對","応":"應","図":"圖","学":"學","実":"實","写":"寫","宝":"寶","寿":"壽","将":"將","当":"當","覚":"覺","観":"觀","歓":"歡","権":"權","変":"變","恋":"戀","蛍":"螢","労":"勞","営":"營","栄":"榮","鶏":"雞","滝":"瀧","浜":"濱","辺":"邊","関":"關","区":"區","欧":"歐","枢":"樞","駆":"驅","体":"體","仏":"佛","払":"拂","仮":"假","価":"價","伝":"傳","会":"會","余":"餘","来":"來","与":"與","両":"兩","乗":"乘","乱":"亂","争":"爭","亜":"亞","児":"兒","党":"黨","内":"內","円":"圓","処":"處","剣":"劍","剤":"劑","励":"勵","効":"效","勧":"勸","医":"醫","巻":"卷","厳":"嚴","収":"收","叙":"敘","号":"號","団":"團","囲":"圍","圏":"圈","塩":"鹽","増":"增","壊":"壞","壮":"壯","声":"聲","奥":"奧","姫":"姬","娯":"娛","寛":"寬","寝":"寢","専":"專","尽":"盡","届":"屆","岳":"嶽","峡":"峽","巣":"巢","帯":"帶","帰":"歸","庁":"廳","廃":"廢","弾":"彈","径":"徑","従":"從","徳":"德","徴":"徵","恵":"惠","悩":"惱","悪":"惡","惨":"慘","懐":"懷","戦":"戰","戯":"戲","戸":"戶","抜":"拔","択":"擇","拝":"拜","拠":"據","拡":"擴","挙":"舉","挿":"插","捜":"搜","掲":"揭","摂":"攝","撃":"擊","数":"數","斉":"齊","斎":"齋","断":"斷","旧":"舊","昼":"晝","暁":"曉","暦":"曆","条":"條","桟":"棧","検":"檢","楼":"樓","様":"樣","横":"橫","歩":"步","歯":"齒","歴":"歷","残":"殘","殻":"殼","毎":"每","渇":"渴","済":"濟","渋":"澀","渓":"溪","温":"溫","湾":"灣","湿":"濕","滞":"滯","潜":"潛","灯":"燈","焼":"燒","犠":"犧","狭":"狹","独":"獨","猟":"獵","献":"獻","獣":"獸","畳":"疊","発":"發","盗":"盜","砕":"碎","礼":"禮","禅":"禪","称":"稱","稲":"稻","穏":"穩","粋":"粹","粛":"肅","経":"經","絵":"繪","継":"繼","続":"續","総":"總","縁":"緣","縄":"繩","縦":"縱","繊":"纖","聴":"聽","胆":"膽","脳":"腦","臓":"臟","舎":"舍","舗":"舖","芸":"藝","茎":"莖","荘":"莊","蔵":"藏","虚":"虛","虫":"蟲","蚕":"蠶","蛮":"蠻","装":"裝","覇":"霸","訳":"譯","証":"證","誉":"譽","謡":"謠","譲":"讓","豊":"豐","賛":"贊","践":"踐","転":"轉","軽":"輕","辞":"辭","逓":"遞","遅":"遲","郷":"鄉","酔":"醉","醸":"釀","釈":"釋","鉱":"鑛","銭":"錢","鋳":"鑄","錬":"鍊","録":"錄","闘":"鬥","陥":"陷","険":"險","随":"隨","隠":"隱","雑":"雜","霊":"靈","静":"靜","頼":"賴","顔":"顏","顕":"顯","騒":"騷","験":"驗","髪":"髮","麦":"麥","黄":"黃","黒":"黑","黙":"默","齢":"齡","亀":"龜","巌":"巖","芦":"蘆","冨":"富","嶋":"島","浅":"淺","糸":"絲","絶":"絕","緑":"綠","画":"畫","麺":"麵","圧":"壓","堕":"墮","塁":"壘","壱":"壹","奨":"獎","嬢":"孃","庄":"莊","弁":"辨","恒":"恆","悦":"悅","桧":"檜","歳":"歲","渉":"涉","瀬":"瀨","焔":"焰","猪":"豬","穂":"穗","窓":"窗","竪":"豎","篭":"籠","繋":"繫","衆":"眾","裏":"裡","覧":"覽","触":"觸","賎":"賤","醤":"醬","隣":"鄰","鹸":"鹼"};
+const toTW=t=>String(t||"").replace(/[\u3400-\u9fff]/g,c=>JP2TW[c]||c);
+const normName=t=>toTW(t).replace(/[\s・·･\-－ー_「」『』"']/g,"").toLowerCase();
+const baseName=t=>normName(String(t||"").replace(/[（(].*?[）)]/g,""));
+const sameName=(a,b)=>!!a&&!!b&&(normName(a)===normName(b)||baseName(a)===baseName(b));
+const findSaved=place=>{const n=noQuery(place);if(n!==null){const h=saved.find(x=>x.no===n);if(h)return h}return saved.find(x=>sameName(x.place,place)||sameName(x.ja,place)||(x.tr&&x.tr.en&&sameName(x.tr.en.name,place)))};
+const uniq=a=>{const seen=new Set();return a.filter(k=>{const n=normName(k);if(!n||seen.has(n))return false;seen.add(n);return true})};
+
+const ICO_SAVE='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/><path d="M12 7v6M9 10h6"/></svg>';
+const ICO_SAVED='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/><path d="M9 10l2 2 4-4"/></svg>';
+const ARROW_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+const ARROW_R='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+/* 查詢結果の履歴：‹ › で前後に移動 */
+let hist=[], hIdx=-1;
+const CLOSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+const STAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
+const favBtn=(d,cls="")=>d.id?`<button type="button" class="fav${cls}" data-fav="${esc(d.id)}" aria-pressed="${!!d.fav}" aria-label="${d.fav?"取消最愛":"加入最愛"}">${STAR}</button>`:"";
+/* 場所のリンク：公式サイト（url があるときだけ）と Google 地圖（名前＋場所から自動） */
+const ICO_WEB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>';
+const ICO_MAP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>';
+function linksHTML(d){
+  if(!d||!d.place||d.type==="person")return "";
+  const q=encodeURIComponent(((d.ja||d.place)+" "+String(d.location||"").replace(/[（(].*$/,"")).trim());
+  const web=/^https?:\/\//.test(d.url||"")?`<a href="${esc(d.url)}" target="_blank" rel="noopener">${ICO_WEB}${tt("web")}</a>`:"";
+  return `<div class="links">${web}<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">${ICO_MAP}${tt("map")}</a></div>`;
+}
+function shopsHTML(d){
+  const L=Array.isArray(d&&d.shops)?d.shops.filter(x=>x&&x.name):[];
+  if(!L.length)return "";
+  const city=String(d.location||"").replace(/[（(].*$/,"").trim();
+  return `<p class="shops-h">${tt("shops")}${L.length}</p><ol class="shops">${L.map((x,i)=>{
+    const q=encodeURIComponent(((x.ja||x.name)+" "+city).trim());
+    const web=/^https?:\/\//.test(x.url||"")?`<a href="${esc(x.url)}" target="_blank" rel="noopener">${ICO_WEB}${tt("web")}</a>`:"";
+    return `<li><div class="sn"><span class="rk">${i+1}</span><b>${esc(x.name)}</b>${x.area?`<span class="sa">${esc(x.area)}</span>`:""}</div>${x.note?`<p class="st">${esc(x.note)}</p>`:""}<div class="sl">${web}<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">${ICO_MAP}${tt("map")}</a></div></li>`}).join("")}</ol>`;
+}
+function cardHTML(d,{isSample=false,mode="search"}={}){
+  const dateLine=d.savedAt?`<span style="margin-left:8px">・${new Date(d.savedAt).toLocaleDateString(lang==="zh"?"zh-TW":lang==="ja"?"ja-JP":"en-US")} ${tt("saved")}</span>`:"";
+  const v=lv(d);
+  return `
+    ${mode==="detail"?`${(()=>{const L=sibs(d),i=L.findIndex(x=>x.id===d.id);return `<div class="dnav">${L.length>1?`<span class="dpos">${i+1}/${L.length}</span>`:""}<button type="button" data-act="dprev" aria-label="上一張"${i>0?"":" disabled"}>${ARROW_L}</button><button type="button" data-act="dnext" aria-label="下一張"${i>=0&&i<L.length-1?"":" disabled"}>${ARROW_R}</button></div>`})()}<button type="button" class="del close" data-act="close" aria-label="關閉">${CLOSE}</button>`:
+      `<div class="hnav"><button type="button" data-act="prev" aria-label="上一個"${hIdx>0?"":" disabled"}>${ARROW_L}</button><button type="button" data-act="next" aria-label="下一個"${hIdx<hist.length-1?"":" disabled"}>${ARROW_R}</button></div>`}
+    ${mode==="detail"?favBtn(d," fav-d")+(noStr(d)?`<p class="eyebrow">${noStr(d)}</p>`:""):`<p class="eyebrow">${isPerson(d)?tt("person"):isHotel(d)?tt("hotel"):tt("spot")}${noStr(d)?` · ${noStr(d)}`:""}${dateLine}</p>`}
+    <h2>${titleHTML(v.name)}${v.sub.a||v.sub.b?`<span class="ja-name">${v.sub.a?`<span lang="ja">${esc(v.sub.a)}</span>`:""}${v.sub.b?`<span class="yomi" lang="ja">${esc(v.sub.b)}</span>`:""}</span>`:""}</h2>
+    <dl><dt>${isPerson(d)?tt("rel"):tt("place")}</dt><dd><button type="button" class="goarea" data-goarea>${esc(v.location)}</button></dd><dt>${isPerson(d)?tt("life"):isHotel(d)?tt("open"):tt("era")}</dt><dd>${esc(v.era)}</dd></dl>
+    <p class="intro">${esc(v.intro)}</p>
+    ${v.has?"":`<p class="fallback">${esc(tt("nolang"))}</p>`}
+    ${v.origin?`<p class="origin-h">${tt("origin")}</p><p class="origin">${esc(v.origin)}</p>`:""}
+    ${shopsHTML(d)}
+    ${linksHTML(d)}
+    <p class="kw-h">${tt("kwh")}</p>
+    <ul class="kws">${(d.keywords||[]).map((k,i)=>[k,v.kwShow(i)]).filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).map(([k,show])=>`<li><button type="button" data-k="${esc(k)}">${esc(show)}</button></li>`).join("")}</ul>
+    ${mode==="detail"?`<button type="button" class="trash" data-act="del" aria-label="刪除這張卡片">${TRASH}</button>`:''}`;
+}
+
+let currentIsSample=false;
+function render(d,isSample=false,fromHist=false){
+  if(!fromHist){
+    const cur=hist[hIdx];
+    if(cur&&(cur.d===d||sameName(cur.d.place,d.place)))cur.d=d,cur.isSample=isSample;
+    else{hist=hist.slice(0,hIdx+1);hist.push({d,isSample});hIdx=hist.length-1}
+  }
+  current=d; currentIsSample=isSample;
+  card.classList.toggle("sample",isSample);   /* 見本カードは出さない（検索したときだけカードを出す） */
+  card.classList.remove("thinking");
+  card.innerHTML=cardHTML(d,{isSample});
+  updateSaveBtn();
+}
+let view="search";
+function updateSaveBtn(){}
+
+/* ---------- views ---------- */
+let detailId=null, lastList="search", areaSel="福岡縣|福岡市";   /* 最初は 查詢 の下に 地區分類（福岡縣 → 福岡市）を出す */
+function show(v){
+  view=v;
+  $("viewSearch").style.display=view==="search"?"flex":"none";
+  $("viewSaved").hidden=view!=="saved"; $("viewSaved").style.display=view==="saved"?"flex":"none";
+  /* 查詢の画面でも、検索欄の下に地區分類を出す */
+  const areaOn=view==="search";
+  $("searchBar").style.display=(view==="search"||view==="saved"||view==="fav"||view==="detail")?"flex":"none";
+  $("viewFav").hidden=view!=="fav"; $("viewFav").style.display=view==="fav"?"flex":"none";
+  $("viewArea").hidden=!areaOn; $("viewArea").style.display=areaOn?"flex":"none";
+  if(areaOn&&dbReady)drawArea();
+  $("viewDetail").hidden=view!=="detail"; $("viewDetail").style.display=view==="detail"?"flex":"none";
+  if(view==="saved"||view==="fav"||view==="search")lastList=view;
+  const tab=view==="detail"?lastList:view;
+  $("tabSearch").setAttribute("aria-selected",tab==="search");
+  $("tabSaved").setAttribute("aria-selected",tab==="saved");
+  $("tabFav").setAttribute("aria-selected",tab==="fav");
+  updateSaveBtn();
+  /* タブの位置は動かさない：内容の先頭がタブのすぐ下に来るようにだけそろえる */
+  const h=document.querySelector("header"), y=h.offsetTop+h.offsetHeight;
+  if(window.scrollY>y)window.scrollTo(0,y);
+}
+$("tabSearch").onclick=()=>show("search");
+$("tabSaved").onclick=()=>{if(view!=="saved"&&view!=="detail")listLimit=PAGE;drawList();show("saved")};
+$("tabFav").onclick=()=>{drawFav();show("fav")};
+
+
+/* キーワードを押したとき：保存済みのカードがあれば表示するだけ。なければ入力欄に入れるだけ（API は使わない） */
+function goSearch(k){
+  q.value=k;
+  const hit=findSaved(k);
+  if(hit){statusEl.className="status";statusEl.textContent="";if(view==="search")render(hit);else openDetail(hit.id);return}
+  statusEl.className="status"; noHit(k);
+}
+
+card.addEventListener("click",async e=>{
+  const k=e.target.closest("[data-k]"); if(k)return goSearch(k.dataset.k);
+  if(e.target.closest("[data-goarea]"))return goArea(current);
+  const act=e.target.closest("[data-act]")?.dataset.act;
+  if(act==="prev"&&hIdx>0){hIdx--;const h=hist[hIdx];render(h.d,h.isSample,true);statusEl.textContent=""}
+  if(act==="next"&&hIdx<hist.length-1){hIdx++;const h=hist[hIdx];render(h.d,h.isSample,true);statusEl.textContent=""}
+});
+$("detail").addEventListener("click",async e=>{
+  const k=e.target.closest("[data-k]"); if(k)return goSearch(k.dataset.k);
+  if(e.target.closest("[data-goarea]")){const dd=saved.find(x=>x.id===detailId);if(dd)goArea(dd);return}
+  const act=e.target.closest("[data-act]")?.dataset.act;
+  const d=saved.find(x=>x.id===detailId); if(!d)return;
+  if(act==="close")closeDetail();
+  if(act==="dprev")stepDetail(-1);
+  if(act==="dnext")stepDetail(1);
+  if(act==="del")deleteCard(d,e.target.closest("[data-act]"));
+});
+
+/* ---------- saved list ---------- */
+function drawList(){
+  const f=q.value.trim().toLowerCase();
+  const fn=noQuery(f);
+  const items=saved.filter(d=>!f||(fn!==null&&d.no===fn)||toTW([d.place,d.ja,d.yomi,d.location,d.intro,...(d.keywords||[])].join(" ")).toLowerCase().includes(toTW(f))||JSON.stringify(d.tr||{}).toLowerCase().includes(f));
+  
+  if(!dbReady){$("list").innerHTML=`<li><p class="empty">正在載入收藏…</p></li>`;return}
+  if(!saved.length){$("list").innerHTML=`<li><p class="empty">還沒有收藏的卡片。<br>查詢景點後會自動保存到這裡。</p></li>`;return}
+  if(!items.length){$("list").innerHTML=`<li><p class="empty">找不到符合「${esc(f)}」的卡片。</p></li>`;return}
+  items.sort((a,b)=>(b.no||0)-(a.no||0)||(Date.parse(b.savedAt||0)||0)-(Date.parse(a.savedAt||0)||0));   /* 新しく作った順（番号の大きい順） */
+  const shown=items.slice(0,listLimit), rest=items.length-shown.length;
+  $("list").innerHTML=shown.map(miniHTML).join("")+
+    (rest>0?`<li class="more-li"><button type="button" class="more" data-more>${tt("more")(rest)}</button></li>`:"");
+}
+/* 一覧では（…）の補足を外して名前だけ出す（詳細画面では全部出す） */
+const shortName=t=>String(t||"").replace(/\s*[（(].*$/,"").trim()||String(t||"");
+function miniHTML(d){return `<li data-id="${esc(d.id)}"><button type="button" class="mini" data-id="${esc(d.id)}">
+    <span><b>${esc(shortName(lv(d).name))}</b></span>
+  </button>${favBtn(d)}</li>`}
+
+/* ---------- 我的最愛 ---------- */
+function drawFav(){
+  if(!dbReady){$("favList").innerHTML=`<li><p class="empty">正在載入…</p></li>`;return}
+  const f=q.value.trim().toLowerCase(), fn=noQuery(f);
+  const favs=saved.filter(d=>d.fav&&(!f||(fn!==null&&d.no===fn)||toTW([d.place,d.ja,d.yomi,d.location,d.intro,...(d.keywords||[])].join(" ")).toLowerCase().includes(toTW(f))||JSON.stringify(d.tr||{}).toLowerCase().includes(f)));
+  $("favList").innerHTML=favs.length?favs.map(miniHTML).join(""):`<li><p class="empty">還沒有加入最愛的卡片。<br>點選卡片上的 ☆ 即可加入。</p></li>`;
+}
+async function toggleFav(id){
+  const d=saved.find(x=>x.id===id); if(!d)return;
+  const on=!d.fav, set=v=>{d.fav=v;const c=serverCards.find(x=>x.id===id);if(c)c.fav=v;redrawAll()};
+  set(on);
+  try{await call({action:"fav",place:d.place,fav:on})}
+  catch{set(!on);const st=$(lastList==="fav"?"favStatus":lastList==="saved"?"savedStatus":"areaStatus");st.className="status err";st.textContent="無法更新最愛，請再試一次。"}
+}
+function redrawAll(){
+  if(!$("viewSaved").hidden)drawList();
+  if(!$("viewArea").hidden)drawArea();
+  if(!$("viewFav").hidden)drawFav();
+  if(!$("viewDetail").hidden){const d=saved.find(x=>x.id===detailId);if(d)$("detail").innerHTML=cardHTML(d,{mode:"detail"})}
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-fav]");if(!b)return;e.preventDefault();e.stopPropagation();toggleFav(b.dataset.fav)},true);
+
+/* ---------- 地區分類：location から「縣＋市區町村」で分ける ---------- */
+function areaOf(d){
+  const loc=String(d.location||"").replace(/[（(].*$/,"").trim();
+  if(!loc||/^日本/.test(loc))return {pref:"日本全國",city:"日本全國"};
+  const m=loc.match(/^(東京都|北海道|京都府|大阪府|[^都道府縣]{2,3}[縣県])?(.+?[市郡區町村])?/)||[];
+  if(m[1])m[1]=m[1].replace(/県$/,"縣");
+  return {pref:m[1]||"其他",city:m[2]||m[1]||"其他"};
+}
+function drawArea(){
+  if(!dbReady||!saved.length){$("areaChips").innerHTML=`<p class="empty">還沒有收藏的卡片。</p>`;$("areaList").innerHTML="";return}
+  const groups=new Map();
+  for(const d of saved){const a=areaOf(d);const k=a.pref+"|"+a.city;
+    if(!groups.has(a.pref))groups.set(a.pref,new Map());
+    const g=groups.get(a.pref); if(!g.has(k))g.set(k,a.city);}
+  /* 九州を上に：福岡→熊本→大分→ほかの九州→その他の県→日本全國→其他 */
+  const PREF_ORDER=["福岡縣","熊本縣","大分縣","佐賀縣","長崎縣","宮崎縣","鹿兒島縣","沖繩縣"];
+  const rank=p=>{const i=PREF_ORDER.indexOf(p);return i>=0?i:p==="日本全國"?900:p==="其他"?999:100};
+  const sorted=[...groups].sort((a,b)=>rank(a[0])-rank(b[0]));
+  const keys=sorted.flatMap(([,g])=>[...g.keys()]);
+  if(!areaSel||!keys.includes(areaSel))areaSel=keys[0];
+  /* 縣を横に並べ、押した縣の市町村を下に出す（開くのは一度に1つ） */
+  const selPref=(areaSel||"").split("|")[0];
+  if(openPref===undefined)openPref=selPref||"福岡縣";
+  const cur=sorted.find(([p])=>p===openPref);
+  if(cur&&!cur[1].has(areaSel))areaSel=[...cur[1].keys()][0];   // 開いた縣の最初の市町村を選ぶ
+  $("areaChips").innerHTML=`<div class="prefs-wrap"><div class="prefs">${sorted.map(([pref])=>
+      `<button type="button" class="pref-b" data-pref="${esc(pref)}" aria-expanded="${pref===openPref}">${esc(lang==="zh"?pref:pref.replace(/縣/g,"県"))}</button>`).join("")}</div><button type="button" class="pref-less" aria-label="前面的縣" hidden>‹</button><button type="button" class="pref-more" aria-label="更多縣" hidden>›</button></div>`+
+    (cur?`<div class="cities chips">${[...cur[1]].map(([k,city])=>`<button type="button" data-area="${esc(k)}" aria-pressed="${k===areaSel}">${esc(lang==="zh"?city:city.replace(/縣/g,"県"))}</button>`).join("")}</div>`:"");
+  requestAnimationFrame(updatePrefMore);
+  /* 地區分類の一覧：1回に50枚まで。下の「顯示更多」で続きを出す（地域を変えたら50枚に戻る） */
+  const inArea=saved.filter(d=>{const a=areaOf(d);return a.pref+"|"+a.city===areaSel});
+  const shownA=inArea.slice(0,areaLimit), restA=inArea.length-shownA.length;
+  $("areaList").innerHTML=shownA.map(miniHTML).join("")+(restA>0?`<li class="more-li"><button type="button" class="more" data-amore>${esc(tt("more")(restA))}</button></li>`:"");
+}
+let openPref;
+let areaLimit=50;
+/* 縣の列が横にはみ出すときは右端に › を出す（押すと右へ送る。端まで来たら消す） */
+function updatePrefMore(){
+  const row=document.querySelector("#areaChips .prefs"), more=document.querySelector("#areaChips .pref-more");
+  if(row&&more)more.hidden=row.scrollLeft+row.clientWidth>=row.scrollWidth-4;
+  const less=document.querySelector("#areaChips .pref-less");
+  if(row&&less)less.hidden=row.scrollLeft<=4;
+}
+$("areaChips").addEventListener("scroll",updatePrefMore,true);
+window.addEventListener("resize",updatePrefMore);
+$("areaChips").addEventListener("click",e=>{
+  const t=e.target.closest("[data-pref]");
+  if(e.target.closest(".pref-less")){const row=document.querySelector("#areaChips .prefs");row.scrollLeft-=row.clientWidth*0.7;setTimeout(updatePrefMore,400);return}
+  if(e.target.closest(".pref-more")){const row=document.querySelector("#areaChips .prefs");row.scrollLeft+=row.clientWidth*0.7;setTimeout(updatePrefMore,400);return}
+  if(t){areaLimit=50;const sl=document.querySelector("#areaChips .prefs")?.scrollLeft||0;openPref=openPref===t.dataset.pref?null:t.dataset.pref;drawArea();const row=document.querySelector("#areaChips .prefs");if(row)row.scrollLeft=sl;updatePrefMore();return}
+  const b=e.target.closest("[data-area]");if(b){areaSel=b.dataset.area;areaLimit=50;drawArea()}});
+/* 一覧は 20 枚ずつ表示し、「顯示更多」で続きを出す */
+const PAGE=50; let listLimit=PAGE;
+q.addEventListener("input",()=>{if(view==="saved"){listLimit=PAGE;drawList()}else if(view==="fav")drawFav()});
+/* 新しく検索した順（lastUsed → savedAt）。同じ時刻なら旅程の順 */
+const usedAt=d=>Date.parse(d.lastUsed||d.savedAt||0)||0;
+const byRecent=(a,b)=>usedAt(b)-usedAt(a)||((a.order??0)-(b.order??0));
+
+const onListClick=e=>{
+  if(e.target.closest("[data-amore]")){areaLimit+=50;drawArea();return}
+  if(e.target.closest("[data-more]")){listLimit+=PAGE;drawList();return}
+  const del=e.target.closest("[data-del]");
+  if(del){const d=saved.find(x=>x.id===del.dataset.del);if(d)deleteCard(d,del);return}
+  const b=e.target.closest("[data-id]"); if(!b)return;
+  openDetail(b.dataset.id);
+};
+$("list").addEventListener("click",onListClick);
+$("areaList").addEventListener("click",onListClick);
+$("favList").addEventListener("click",onListClick);
+/* 詳細画面：同じ地域（縣＋市町村）のカードを ‹ › で切り替える。Esc で閉じる。スマホは左右スワイプ */
+function sibs(d){if(lastList==="fav"&&d.fav)return saved.filter(x=>x.fav);const a=areaOf(d),k=a.pref+"|"+a.city;return saved.filter(x=>{const b=areaOf(x);return b.pref+"|"+b.city===k})}
+/* 場所をおすと、その縣・市町村の一覧（地區分類）へ飛ぶ */
+function goArea(d){
+  const a=areaOf(d); areaSel=a.pref+"|"+a.city; openPref=a.pref; areaLimit=50;
+  show("search"); drawArea();
+  const el=$("viewArea"); const y=el.getBoundingClientRect().top+window.scrollY-8; window.scrollTo({top:y,behavior:"smooth"});
+}
+function closeDetail(){drawList();drawArea();drawFav();show(lastList)}
+function stepDetail(n){
+  const d=saved.find(x=>x.id===detailId); if(!d)return;
+  const L=sibs(d), i=L.findIndex(x=>x.id===d.id), t=L[i+n]; if(!t)return;
+  detailId=t.id; $("detail").innerHTML=cardHTML(t,{mode:"detail"});
+}
+document.addEventListener("keydown",e=>{
+  if(view!=="detail"||e.target.closest?.("input,textarea"))return;
+  if(e.key==="Escape"){e.preventDefault();closeDetail()}
+  else if(e.key==="ArrowLeft")stepDetail(-1);
+  else if(e.key==="ArrowRight")stepDetail(1);
+});
+{let sx=0,sy=0,on=false;const el=$("detail");
+  el.addEventListener("touchstart",e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;on=e.touches.length===1},{passive:true});
+  el.addEventListener("touchend",e=>{if(!on)return;on=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)stepDetail(dx<0?1:-1)},{passive:true});}
+function openDetail(id){
+  const d=saved.find(x=>x.id===id); if(!d)return;
+  detailId=id; $("detail").innerHTML=cardHTML(d,{mode:"detail"}); show("detail");
+}
+function updateCount(){const t=$("total");if(t)t.textContent=saved.length?tt("count")(saved.length):""}
+
+/* ---------- db ---------- */
+async function saveCard(d,btn){
+  if(!db||findSaved(d.place))return;
+
+  try{
+    await db.collection("cards").add({place:d.place,location:d.location||"",era:d.era||"",intro:d.intro||"",
+      keywords:(d.keywords||[]).slice(0,10),type:d.type||"spot",order:-Date.now(),savedAt:new Date().toISOString()});
+  }catch(e){
+    statusEl.className="status err"; statusEl.textContent="保存失敗，請再查詢一次。";
+  }
+}
+let undoTimer=null;
+async function deleteCard(d,btn){
+  btn.disabled=true;
+  const {id,...body}=d;
+  try{
+    await db.collection("cards").doc(id).delete();
+    saved=saved.filter(x=>x.id!==id); updateCount();
+    drawList(); drawArea(); drawFav(); show(lastList);
+    const st=$(lastList==="fav"?"favStatus":lastList==="saved"?"savedStatus":"areaStatus"); st.className="status";
+    st.innerHTML=`已刪除「${esc(d.place)}」 <button type="button" class="undo">復原</button>`;
+    st.querySelector(".undo").onclick=async()=>{
+      st.textContent="";
+      try{await db.collection("cards").doc(id).set(body)}catch{st.className="status err";st.textContent="無法復原。"}
+    };
+    clearTimeout(undoTimer); undoTimer=setTimeout(()=>{st.textContent=""},8000);
+  }catch{btn.disabled=false;btn.title="刪除失敗，請再試一次"}
+}
+
+dbPromise.then(x=>{
+  db=x;
+  if(!db){drawList();updateSaveBtn();return}
+  db.collection("cards").orderBy("savedAt","desc").onSnapshot(snap=>{
+    saved=snap.docs.map(s=>({id:s.id,...s.data()})).sort(byRecent)
+      .filter((d,i,all)=>all.findIndex(x=>sameName(x.place,d.place))===i);
+    dbReady=true; updateCount(); updateSaveBtn();
+    if(current)render(current,currentIsSample);
+    if(!$("viewSaved").hidden)drawList();
+    if(!$("viewArea").hidden)drawArea();
+    if(!$("viewFav").hidden)drawFav();
+    if(!$("viewDetail").hidden){const d=saved.find(x=>x.id===detailId);if(d)$("detail").innerHTML=cardHTML(d,{mode:"detail"});}
+  },err=>{$("savedStatus").className="status err";$("savedStatus").textContent="無法載入收藏。"});
+});
+
+/* ---------- ask Claude ---------- */
+const ERR={rate_limited:"查詢次數過多，請稍後再試。",daily_limit:"今日查詢次數已達上限，請明天再試。",bad_keyword:"請輸入1～40字的關鍵字。",
+  refused:"無法介紹此關鍵字，請換一個試試。",invalid_json:"回覆格式有誤，請再按一次「製作卡片」。",not_configured:"服務尚未設定完成。"};
+
+
+/* 「製作卡片」：保存済みなら表示。なければ作成待ちリストに入れる（API は使わない。Mac の Claude Code がまとめて作る） */
+/* 検索：保存カードを探して出す。ないときだけ「製作卡片」を出す（押すと作成待ちリストに入る。API は使わない） */
+function noHit(kw){
+  statusEl.className="status";
+  statusEl.textContent=tt("nohit");
+  setGo(kw);
+}
+/* 大きいボタン：ふだんは「查詢卡片」。カードがなかったときだけ「製作卡片」に変わる */
+let makeKw=null;
+function setGo(kw){makeKw=kw||null;go.dataset.t=kw?"make":"go";go.textContent=tt(go.dataset.t)}
+function ask(kw){
+  kw=kw.trim(); if(!kw)return;
+  const hit=findSaved(kw)||findSaved(toTW(kw));
+  if(hit){if(view==="search")render(hit);else openDetail(hit.id);statusEl.className="status";statusEl.textContent="";return}
+  noHit(kw);
+}
+async function requestCard(kw){
+  statusEl.className="status"; statusEl.textContent="…"; setGo(null);
+  try{
+    const d=await call({action:"request",keyword:toTW(kw)});
+    if(d.cached){if(view==="search")render(d);else{const h=findSaved(kw);if(h)openDetail(h.id)}statusEl.textContent=tt("shown");refreshCards();return}
+    statusEl.textContent=tt("queued")(kw);
+  }catch(e){
+    statusEl.className="status err"; statusEl.textContent=ERR[e?.code]||"連線發生問題，請再試一次。";
+  }
+}
+
+/* 合言葉：最初の1回だけ入力し、この端末に記憶する */
+function askPass(kw){
+  statusEl.className="status";
+  statusEl.innerHTML='請輸入密碼：<input id="passIn" type="password" inputmode="numeric" autocomplete="off" style="font:inherit;width:9em;padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink)"> <button type="button" id="passOk" style="padding:4px 12px;background:var(--ink);color:var(--card)">確定</button>';
+  const go2=()=>{const v=$("passIn").value.trim();if(!v)return;try{localStorage.setItem("spotGuidePass",v)}catch{}statusEl.textContent="";if(kw)ask(kw);else refreshCards()};
+  $("passOk").onclick=go2; $("passIn").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();go2()}}; $("passIn").focus();
+}
+/* 更新ボタン：ほかの端末（Mac・iPad など）で作ったカードを読み込む */
+$("refresh").onclick=async()=>{const b=$("refresh");if(b.classList.contains("spin"))return;b.classList.add("spin");await refreshCards();setTimeout(()=>b.classList.remove("spin"),400)};
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshCards()});
+$("f").addEventListener("submit",e=>{e.preventDefault();q.blur();if(makeKw&&q.value.trim()===makeKw)requestCard(makeKw);else ask(q.value)});
+q.addEventListener("input",()=>{if(makeKw&&q.value.trim()!==makeKw)setGo(null)});
+/* ロゴを押すとトップ（景點查詢の最初の画面）に戻る */
+$("home").addEventListener("click",e=>{e.preventDefault();q.value="";statusEl.textContent="";statusEl.className="status";
+  show("search");window.scrollTo({top:0,behavior:"smooth"})});
+render(SAMPLE,true); show("search"); drawArea(); if(lang!=="zh")applyLang();
+</script>
+
+</body>
+</html>
